@@ -33,6 +33,27 @@ def math_dispersion(rand_arr, n): # математическая дисперс�
     return sum / n
 
 
+def generate_discrete_random(values, probabilities, n):  # метод кумулятивных вероятностей для
+    # преобразования равномерно распределенных случайных чисел  в дискретные значения с заданными вероятностями
+    cumulative_probabilities = []
+    cumulative_sum = 0
+    for p in probabilities:  # Кумулятивная вероятность для каждого значения вычисляется
+        # как сумма всех предыдущих вероятностей плюс текущая вероятность
+        cumulative_sum += p
+        cumulative_probabilities.append(cumulative_sum)
+
+    #print(cumulative_probabilities)
+    result = []
+    for _ in range(n):  # выбираем вероятность, на основе того, что кумулятивная вероятность P(X < x_i),
+        # где x_i - кум. вероятность, X случайная величина
+        r = random.random()
+        for i, cp in enumerate(cumulative_probabilities):
+            if r < cp:
+                result.append(values[i])
+                break
+    return result
+
+
 a, b = 0, 9
 n = 100000
 random_arr = [random.randint(a, b) for i in range(n)]
@@ -48,7 +69,7 @@ print("Стандартное отклонение = ", math_disp ** (-1/2))
 
 digit_arr = [0, 1, 2, 3, 4]  # задаем массив чисел
 probability = [0.1, 0.2, 0.3, 0.25, 0.15]  # задаем массив вероятностей для этих чисел
-dispers_random = random.choices(digit_arr, probability, k=n)  # распределяем
+dispers_random = generate_discrete_random(digit_arr, probability, n)  # распределяем
 
 print("Математическое ожидание для дискретного массива = ", math_expectation(dispers_random, n))
 
